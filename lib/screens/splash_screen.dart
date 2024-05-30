@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taxi_fare/constants/colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taxi_fare/utils/colors.dart';
 import 'package:taxi_fare/screens/sign_in_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,19 +13,24 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   getValidationData();
-  // }
-  //
-  // Future<void> getValidationData() async {
-  //   final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  //   var isLoggedIn = sharedPreferences.getBool('isLoggedIn') ?? false;
-  //   if (isLoggedIn) {
-  //     context.goNamed("home");
-  //   }
-  // }
+  @override
+  @override
+  void initState() {
+    super.initState();
+    _checkSession();
+  }
+
+  Future<void> _checkSession() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? user = prefs.getString('user');
+    if (user != null) {
+      context.goNamed("home");
+    } else {
+      Future.delayed(const Duration(seconds: 3), () {
+        setState(() {});
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

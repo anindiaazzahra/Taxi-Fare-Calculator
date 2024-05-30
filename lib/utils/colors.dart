@@ -12,3 +12,5 @@ Color textColor2 = const Color(0xff6F6B7A);
 Color textColor3 = const Color(0xffea8277);
 Color buttonColor1 = const Color(0xff3B1D2C);
 Color buttonColor2 = const Color(0xffEBE8EA);
+Color errorColor = const Color(0xffb60101);
+Color successColor = const Color(0xff4dc900);

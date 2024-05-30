@@ -13,7 +13,7 @@ import 'package:taxi_fare/screens/splash_screen.dart';
 class AppNavigation {
   AppNavigation._();
 
-  static String initial = "/home";
+  static String initial = "/splash";
 
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorHome = GlobalKey<NavigatorState>(debugLabel: 'shellHome');

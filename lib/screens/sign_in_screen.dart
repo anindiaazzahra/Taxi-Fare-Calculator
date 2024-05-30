@@ -3,72 +3,122 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taxi_fare/constants/colors.dart';
-import 'package:taxi_fare/screens/sign_up_screen.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:taxi_fare/utils/colors.dart';
+import 'package:taxi_fare/models/user.dart';
+import 'package:taxi_fare/utils/encryption.dart';
 
 class SignInScreen extends StatefulWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({Key? key}) : super(key: key);
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  _SignInScreenState createState() => _SignInScreenState();
 }
 
-class _SignInPageState extends State<SignInScreen> {
+class _SignInScreenState extends State<SignInScreen> {
   bool _obscureText = true;
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   Future<void> _signIn() async {
-  //   if (_formKey.currentState!.validate()) {
-  //     String email = _emailController.text.trim();
-  //     String password = _passwordController.text.trim();
-  //
-  //     SharedPreferences prefs = await SharedPreferences.getInstance();
-  //
-  //     List<Map<String, dynamic>>? userList;
-  //     try {
-  //       userList = (json.decode(prefs.getString('userList') ?? '[]') as List<dynamic>).cast<Map<String, dynamic>>();
-  //     } catch (e) {
-  //       print('Error decoding user list: $e');
-  //       userList = [];
-  //     }
-  //
-  //     bool isLoggedIn = false;
-  //     Map<String, dynamic>? loggedInUser;
-  //     for (var user in userList) {
-  //       if (user['email'] == email && user['password'] == password) {
-  //         isLoggedIn = true;
-  //         loggedInUser = user;
-  //         break;
-  //       }
-  //     }
-  //
-  //     if (isLoggedIn) {
-  //       await prefs.setBool('isLoggedIn', true);
-  //       await prefs.setString('loggedInUserData', json.encode(loggedInUser));
-  //       context.goNamed("home");
-  //     } else {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text('Invalid username or password!'),
-  //         ),
-  //       );
-  //     }
-  //   }
+    if (_formKey.currentState!.validate()) {
+      String email = _emailController.text.trim();
+      String password = _passwordController.text.trim();
+
+      final userBox = await Hive.openBox<User>('userBox');
+
+      if (!userBox.containsKey(email)) {
+        _showErrorDialog('Email not found!');
+        return;
+      }
+
+      User? user = userBox.get(email);
+
+      print(user?.password);
+
+      if (user != null && EncryptionUtil.decryptText(user.password) == password) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('user', json.encode({'email': email}));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sign In Successful!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        context.goNamed("home");
+
+        _emailController.clear();
+        _passwordController.clear();
+      } else {
+        _showErrorDialog('Invalid email or password!');
+      }
+    }
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.error_outline, color: errorColor),
+            SizedBox(width: 10),
+            Text(
+              'Error',
+              style: TextStyle(
+                color: errorColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: TextStyle(
+            color: textColor1,
+            fontSize: 16,
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            style: TextButton.styleFrom(
+              backgroundColor: errorColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: Text(
+              'Okay',
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.only(top: 120.0),
+          padding: const EdgeInsets.only(top: 60.0),
           child: Form(
             key: _formKey,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(height: size.height * 0.03),
                 Text(
@@ -109,7 +159,7 @@ class _SignInPageState extends State<SignInScreen> {
                       const SizedBox(height: 20),
                       Text.rich(
                         TextSpan(
-                          text: "Not a member? ",
+                          text: "Don't have an account? ",
                           style: TextStyle(
                             color: textColor2,
                             fontWeight: FontWeight.bold,
@@ -182,7 +232,9 @@ class _SignInPageState extends State<SignInScreen> {
                   });
                 },
                 child: Icon(
-                  _obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  _obscureText
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
                   color: Colors.black26,
                 ),
               )
@@ -209,3 +261,4 @@ class _SignInPageState extends State<SignInScreen> {
     );
   }
 }
+

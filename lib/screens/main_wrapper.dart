@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:taxi_fare/constants/colors.dart';
+import 'package:taxi_fare/utils/colors.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({

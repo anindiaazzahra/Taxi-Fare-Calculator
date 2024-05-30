@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:taxi_fare/constants/colors.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:taxi_fare/utils/colors.dart';
+import 'package:taxi_fare/models/boxes.dart';
+import 'package:taxi_fare/models/user.dart';
 import 'package:taxi_fare/navigation/app_navigation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserAdapter());
+  await Hive.openBox<User>(HiveBoxes.user);
   runApp(const MyApp());
 }
 
