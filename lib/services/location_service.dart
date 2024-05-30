@@ -13,7 +13,7 @@ class LocationService {
         Uri.parse('$baseUrl?address=$address'),
         headers: {
           'X-RapidAPI-Key': apiKey,
-          'X-RapidAPI-Host': 'trueway-geocoding.p.rapidapi.com', // Ganti host menjadi trueway-geocoding
+          'X-RapidAPI-Host': 'trueway-geocoding.p.rapidapi.com',
         },
       );
 
@@ -31,7 +31,15 @@ class LocationService {
             // Ambil objek location yang berisi latitude dan longitude
             final Map<String, dynamic> location = firstResult['location'];
 
-            final Location firstLocation = Location.fromJson(location);
+            // Ambil alamat
+            final String address = firstResult['address'];
+
+            // Buat objek Location dengan latitude, longitude, dan address
+            final Location firstLocation = Location(
+              latitude: location['lat'],
+              longitude: location['lng'],
+              address: address,
+            );
 
             // Kembalikan lokasi pertama sebagai Location
             return firstLocation;
@@ -39,7 +47,7 @@ class LocationService {
         }
       }
       return null;
-    } catch(e) {
+    } catch (e) {
       throw Exception(e.toString());
     }
   }

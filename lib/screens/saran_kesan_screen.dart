@@ -8,7 +8,7 @@ class SaranKesanScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Saran & Kesan',
+          'Kesan & Saran',
           style: TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -22,21 +22,6 @@ class SaranKesanScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'Saran',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                '1. Ketika di Halaman Login masukkan username dan password.',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              SizedBox(height: 20),
-              Text(
                 'Kesan',
                 style: TextStyle(
                   fontSize: 20,
@@ -45,7 +30,24 @@ class SaranKesanScreen extends StatelessWidget {
               ),
               SizedBox(height: 10),
               Text(
-                '1. Ketika di Halaman Login masukkan username dan password.',
+                'Mata kuliah pemrograman mobile memberikan wawasan yang luas terkait pengembangan aplikasi berbasis mobile. Pengalaman ini membantu saya memahami konsep fundamental dalam pembuatan aplikasi, mulai dari desain antarmuka hingga logika pemrograman.',
+                textAlign: TextAlign.justify,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                'Saran',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Menambahkan lebih banyak materi praktis dan studi kasus dalam pembelajaran agar pemahaman lebih mendalam.',
+                textAlign: TextAlign.justify,
                 style: TextStyle(
                   fontSize: 16,
                 ),

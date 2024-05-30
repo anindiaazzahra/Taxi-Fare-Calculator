@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:taxi_fare/models/history.dart';
 import 'package:taxi_fare/utils/colors.dart';
 import 'package:taxi_fare/models/boxes.dart';
 import 'package:taxi_fare/models/user.dart';
@@ -11,6 +12,9 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(UserAdapter());
   await Hive.openBox<User>(HiveBoxes.user);
+  Hive.registerAdapter(HistoryAdapter());
+  Hive.registerAdapter(CalculationResultAdapter());
+  await Hive.openBox<History>(HiveBoxes.history);
   runApp(const MyApp());
 }
 
