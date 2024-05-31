@@ -76,6 +76,7 @@ class _SignUpPageState extends State<SignUpScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: backgroundColor1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -158,7 +159,7 @@ class _SignUpPageState extends State<SignUpScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(30),
                           ),
                           minimumSize: Size(size.width, 68),
                         ),

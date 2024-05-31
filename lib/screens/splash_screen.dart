@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taxi_fare/utils/colors.dart';
-import 'package:taxi_fare/screens/sign_in_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -44,36 +43,35 @@ class _SplashScreenState extends State<SplashScreen> {
           children: [
             Align(
               alignment: Alignment.topCenter,
-              child: Container(
-                height: size.height * 0.53,
-                width: size.width,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    image: const DecorationImage(
-                      image: AssetImage("lib/assets/images/taxi.png"),
-                    ),
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft: Radius.circular(50),
-                      bottomRight: Radius.circular(50),
-                    )
+              child: Padding(
+                padding: const EdgeInsets.only(top: 80.0),
+                child: Container(
+                  height: size.height * 0.50,
+                  width: size.width * 0.76,
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      image: const DecorationImage(
+                        image: AssetImage("lib/assets/images/taxi.png"),
+                      ),
+                  ),
                 ),
               ),
             ),
             Positioned(
-              top: size.height * 0.6,
+              top: size.height * 0.58,
               left: 0,
               right: 0,
               child: Center(
                 child: Column(
                   children: [
                     Text(
-                      "Let's Calculate Your\nTaxi Fare\nEffortlessly!",
+                      "Let's Calculate Your \nTaxi Fare\nEffortlessly!",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontWeight: FontWeight.w800,
+                        fontWeight: FontWeight.w600,
                         fontSize: 34,
                         color: textColor1,
-                        height: 1.2,
+                        height: 1.3,
                       ),
                     ),
 
@@ -98,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(30),
                               ),
-                              minimumSize: Size(size.width, 68),
+                              minimumSize: Size(size.width, 62),
                             ),
                             child: const Text(
                               "Get Started",

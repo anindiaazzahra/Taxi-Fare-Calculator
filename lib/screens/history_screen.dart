@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taxi_fare/models/history.dart';
+import 'package:taxi_fare/utils/colors.dart';
 
 import 'detail_history_screen.dart';
 
@@ -17,7 +18,7 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   late String _email = '';
   late List<CalculationResult> calculationResults = [];
-  late List<CalculationResult> filteredResults = []; // List for filtered results
+  late List<CalculationResult> filteredResults = [];
   TextEditingController _searchController = TextEditingController();
 
   @override
@@ -48,15 +49,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
     History? history = historyBox.get(_email);
     setState(() {
       calculationResults = history?.calculationResults.toList().reversed.toList() ?? [];
-      filteredResults = calculationResults; // Initialize filtered results with all calculation results
+      filteredResults = calculationResults;
     });
   }
 
-  // Function to filter calculation results based on departure or arrival location
   void _filterResults(String query) {
     setState(() {
       if (query.isEmpty) {
-        filteredResults = calculationResults; // Reset filtered results when query is empty
+        filteredResults = calculationResults;
       } else {
         filteredResults = calculationResults.where((result) =>
         result.departureLocation.toLowerCase().contains(query.toLowerCase()) ||
@@ -99,7 +99,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               itemCount: filteredResults.length,
               itemBuilder: (context, index) {
                 final result = filteredResults[index];
-                return GestureDetector(
+                return ListTile(
                   onTap: () {
                     Navigator.push(
                       context,
@@ -110,8 +110,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       ),
                     );
                   },
-                  child: Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  title: Container(
+                    height: 136,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.black.withOpacity(0.05),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          spreadRadius: 1,
+                          blurRadius: 6,
+                          offset: const Offset(0, -1),
+                        ),
+                      ],
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -121,22 +136,38 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             '${result.departureLocation} - ${result.arrivalLocation}',
                             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                           ),
-                          SizedBox(height: 8),
-                          Text(
-                            'Price: \$${(result.price / 100).toStringAsFixed(2)}',
-                            style: TextStyle(fontSize: 14),
+                          SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(Icons.attach_money, color: textColor2,  size: 20),
+                              SizedBox(width: 4),
+                              Text(
+                                '\$${(result.price / 100).toStringAsFixed(2)}',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'Distance: ${result.distance} km',
-                            style: TextStyle(fontSize: 14),
+                          SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(Icons.directions_car, color: textColor2, size: 20),
+                              SizedBox(width: 4),
+                              Text(
+                                '${result.distance} km',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'Duration: ${result.duration} min',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            'Estimated Arrival Time: ${result.estimatedArrivalTime.toLocal().toString().split(' ')[1].substring(0, 5)}',
-                            style: TextStyle(fontSize: 14),
+                          SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Icon(Icons.timer, color: textColor2, size: 20),
+                              SizedBox(width: 4),
+                              Text(
+                                '${result.duration} min',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                            ],
                           ),
                         ],
                       ),

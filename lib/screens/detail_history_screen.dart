@@ -75,10 +75,8 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DetailItem(title: 'Departure Location', value: widget.calculationResult.departureLocation),
-              DetailItem(title: 'Arrival Location', value: widget.calculationResult.arrivalLocation),
-              DetailItem(title: 'Departure Address', value: widget.calculationResult.departureAddress),
-              DetailItem(title: 'Arrival Address', value: widget.calculationResult.arrivalAddress),
+              DetailItem(title: 'Departure Location', value: '${widget.calculationResult.departureLocation} - ${widget.calculationResult.departureAddress}'),
+              DetailItem(title: 'Arrival Location', value: '${widget.calculationResult.arrivalLocation} - ${widget.calculationResult.arrivalAddress}'),
               Row(
                 children: [
                   Expanded(
@@ -87,20 +85,23 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
                       value: '$_selectedCurrency ${_convertedPrice.toStringAsFixed(2)}',
                     ),
                   ),
-                  DropdownButton<String>(
-                    value: _selectedCurrency,
-                    items: _conversionRates.keys.map((String currency) {
-                      return DropdownMenuItem<String>(
-                        value: currency,
-                        child: Text(currency),
-                      );
-                    }).toList(),
-                    onChanged: (String? newCurrency) {
-                      setState(() {
-                        _selectedCurrency = newCurrency!;
-                        _convertPrice();
-                      });
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: DropdownButton<String>(
+                      value: _selectedCurrency,
+                      items: _conversionRates.keys.map((String currency) {
+                        return DropdownMenuItem<String>(
+                          value: currency,
+                          child: Text(currency),
+                        );
+                      }).toList(),
+                      onChanged: (String? newCurrency) {
+                        setState(() {
+                          _selectedCurrency = newCurrency!;
+                          _convertPrice();
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
@@ -114,19 +115,22 @@ class _DetailHistoryScreenState extends State<DetailHistoryScreen> {
                       value: DateFormat.Hm().format(convertedArrivalTime),
                     ),
                   ),
-                  DropdownButton<String>(
-                    value: _selectedTimeZone,
-                    items: _timeZoneOffsets.keys.map((String timeZone) {
-                      return DropdownMenuItem<String>(
-                        value: timeZone,
-                        child: Text(timeZone),
-                      );
-                    }).toList(),
-                    onChanged: (String? newTimeZone) {
-                      setState(() {
-                        _selectedTimeZone = newTimeZone!;
-                      });
-                    },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: DropdownButton<String>(
+                      value: _selectedTimeZone,
+                      items: _timeZoneOffsets.keys.map((String timeZone) {
+                        return DropdownMenuItem<String>(
+                          value: timeZone,
+                          child: Text(timeZone),
+                        );
+                      }).toList(),
+                      onChanged: (String? newTimeZone) {
+                        setState(() {
+                          _selectedTimeZone = newTimeZone!;
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taxi_fare/models/user.dart';
+import 'package:taxi_fare/utils/colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -33,7 +34,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
       final userBox = await Hive.openBox<User>('userBox');
       User? currentUser = userBox.values.firstWhere(
-            (user) => user.email == _email);
+              (user) => user.email == _email);
       if (currentUser != null) {
         setState(() {
           // Menetapkan currentUser
@@ -62,25 +63,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.logout,
-            ),
-            onPressed: () => _signOut(context),
-          ),
-        ],
       ),
       body: _email.isEmpty
           ? const Center(
         child: CircularProgressIndicator(),
       )
-          :Container(
+          : Container(
         width: double.infinity,
         child: Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(0.0, 40.0, 0.0, 30.0),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0.0, 40.0, 0.0, 30.0),
               child: Center(
                 child: CircleAvatar(
                   radius: 80,
@@ -133,6 +126,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: const TextStyle(
                           fontSize: 20,
                           color: Colors.black54
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 30.0),
+                      child: ElevatedButton(
+                        onPressed: () => _signOut(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          minimumSize: Size(size.width, 50),
+                          padding: EdgeInsets.symmetric(vertical: 16.0),
+                        ),
+                        child: const Text(
+                          "Sign Out",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
                       ),
                     ),
                   ],

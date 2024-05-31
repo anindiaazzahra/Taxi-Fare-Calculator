@@ -30,7 +30,7 @@ class _SignInScreenState extends State<SignInScreen> {
       final userBox = await Hive.openBox<User>('userBox');
 
       if (!userBox.containsKey(email)) {
-        _showErrorDialog('Email not found!');
+        _showErrorDialog('Invalid email or password!');
         return;
       }
 
@@ -62,6 +62,7 @@ class _SignInScreenState extends State<SignInScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: backgroundColor1,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
         ),
@@ -114,7 +115,7 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.only(top: 60.0),
+          padding: const EdgeInsets.only(top: 120.0),
           child: Form(
             key: _formKey,
             child: Column(
@@ -143,7 +144,7 @@ class _SignInScreenState extends State<SignInScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(30),
                           ),
                           minimumSize: Size(size.width, 68),
                         ),

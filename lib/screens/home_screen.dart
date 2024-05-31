@@ -1,7 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:taxi_fare/models/history.dart';
 import 'package:taxi_fare/models/location_model.dart';
@@ -9,6 +9,7 @@ import 'package:taxi_fare/models/taxi_fare_model.dart';
 import 'package:taxi_fare/screens/detail_history_screen.dart';
 import 'package:taxi_fare/services/location_service.dart';
 import 'package:taxi_fare/services/taxi_fare_service.dart';
+import 'package:taxi_fare/utils/colors.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -23,10 +24,12 @@ class _HomeScreenState extends State<HomeScreen> {
   Location? arrivalLocation;
   TaxiFare? fare;
   DateTime? estimatedArrivalTime;
+  bool isLoading = false;
   final TextEditingController departureController = TextEditingController();
   final TextEditingController arrivalController = TextEditingController();
   final LocationService locationService = LocationService();
   final TaxiFareService taxiFareService = TaxiFareService();
+  final _formKey = GlobalKey<FormState>(); // Form key for validation
 
   @override
   void initState() {
@@ -45,6 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void getLocations() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
     try {
       final departureResult = await locationService.getLocation(departureController.text);
       final arrivalResult = await locationService.getLocation(arrivalController.text);
@@ -93,6 +104,10 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -142,6 +157,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           );
+
+          departureController.clear();
+          arrivalController.clear();
         } else {
           showDialog(
             context: context,
@@ -179,13 +197,17 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           },
         );
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -196,84 +218,95 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              TextField(
-                controller: departureController,
-                decoration: InputDecoration(
-                  labelText: 'Departure Address',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              TextField(
-                controller: arrivalController,
-                decoration: InputDecoration(
-                  labelText: 'Arrival Address',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: getLocations,
-                child: Text('Get Calculation'),
-              ),
-              SizedBox(height: 16.0),
-              if (departureLocation != null && arrivalLocation != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Departure Location:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      body: ModalProgressHUD(
+        inAsyncCall: isLoading,
+        progressIndicator: CircularProgressIndicator(),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Form(
+              key: _formKey, // Form key for validation
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Image.asset(
+                    'lib/assets/images/taxi-fare-calculation.png',
+                    width: size.width * 0.7,
+                  ),
+                  SizedBox(height: 20.0),
+                  Text(
+                    'Please provide both departure and arrival addresses. The fare will be calculated based on these locations using API service.',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey[700],
                     ),
-                    Text(
-                      'Latitude: ${departureLocation!.latitude}, Longitude: ${departureLocation!.longitude}, ${departureLocation!.address}',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    SizedBox(height: 8.0),
-                    Text(
-                      'Arrival Location:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      'Latitude: ${arrivalLocation!.latitude}, Longitude: ${arrivalLocation!.longitude},${arrivalLocation!.address}',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ],
-                ),
-              if (fare != null)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      'Taxi Fare:',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                      Text(
-                        'Price: ${fare!.fares[0].priceInCents != null ? '\$${(fare!.fares[0].priceInCents! / 100).toStringAsFixed(2)}' : 'N/A'}',
-                        style: TextStyle(fontSize: 14),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: departureController,
+                    decoration: InputDecoration(
+                      labelText: 'Departure Address',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: primaryColor),
                       ),
-                    Text(
-                      'Distance: ${fare!.distance} km',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    Text(
-                      'Duration: ${fare!.duration} min',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    if (estimatedArrivalTime != null)
-                      Text(
-                        'Estimated Arrival Time: ${estimatedArrivalTime!.toLocal().toString().split(' ')[1].substring(0, 5)}',
-                        style: TextStyle(fontSize: 14),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: primaryColor),
                       ),
-                  ],
-                ),
-            ],
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a departure address';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 20.0),
+                  TextFormField(
+                    controller: arrivalController,
+                    decoration: InputDecoration(
+                      labelText: 'Arrival Address',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: primaryColor),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: primaryColor),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter an arrival address';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 30.0),
+                  ElevatedButton(
+                    onPressed: getLocations,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      minimumSize: Size(size.width, 60),
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                    ),
+                    child: const Text(
+                      "Get Calculation",
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
